@@ -1,0 +1,29 @@
+{
+  "name": "helm-gs",
+  "version": "0.1.0",
+  "description": "Google Storage protocol support for Helm",
+  "author": "Youdowell AG <admin@youdowell.com>",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ausov/helm-gs.git"
+  },
+  "keywords": [
+    "helm",
+    "plugin",
+    "gs",
+    "google",
+    "gcloud"
+  ],
+  "devDependencies": {
+    "standard-changelog": "1.0.4"
+  },
+  "scripts": {
+    "changelog": "standard-changelog",
+    "version:replace": "VERSION=$npm_package_version make release",
+    "preversion": "[ 'master' == $(git rev-parse --abbrev-ref HEAD) ]",
+    "version": "npm run version:replace && npm run changelog && git add -A .",
+    "postversion": "git push --follow-tags"
+  }
+}
