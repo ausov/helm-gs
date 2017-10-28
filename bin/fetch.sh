@@ -1,4 +1,6 @@
 #!/bin/sh
-set -e
+set -eu
 
-gsutil cat "$@"
+file_uri="$4"
+
+gsutil cat "$file_uri"
