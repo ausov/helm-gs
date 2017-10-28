@@ -1,5 +1,5 @@
 name: gs
-version: 0.1.0
+version: 0.2.0
 description: |-
   Provides Google Cloud Storage protocol support for chart downloading.
 usage: |-

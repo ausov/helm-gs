@@ -1,3 +1,13 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/ausov/helm-gs/compare/v0.1.0...v0.2.0) (2017-10-28)
+
+
+### Features
+
+* **gs:** Add publish command ([ab2d5ef](https://github.com/ausov/helm-gs/commit/ab2d5ef)), closes [#3](https://github.com/ausov/helm-gs/issues/3)
+
+
+
 <a name="0.1.0"></a>
 # [0.1.0](https://github.com/ausov/helm-gs/compare/8f3fa3a...v0.1.0) (2017-10-28)
 
