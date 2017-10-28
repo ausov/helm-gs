@@ -5,6 +5,7 @@ description: |-
 usage: |-
   The plugin allows to use Google Storage protocol to fetch charts.
   Requires 'gsutil' tool.
+command: "$HELM_PLUGIN_DIR/bin/main.sh"
 downloaders:
   - protocols: ["gs"]
     command: "bin/fetch.sh"
