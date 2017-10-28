@@ -8,6 +8,3 @@ usage: |-
 downloaders:
   - protocols: ["gs"]
     command: "bin/fetch.sh"
-hooks:
-  install: "cd $HELM_PLUGIN_DIR; hooks/install.sh"
-  update: "cd $HELM_PLUGIN_DIR; hooks/install.sh"
