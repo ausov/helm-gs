@@ -1,0 +1,10 @@
+name: gs
+version: 0.1.0
+description: |-
+  Provides Google Cloud Storage protocol support for chart downloading.
+usage: |-
+  The plugin allows to use Google Storage protocol to fetch charts.
+  Requires 'gsutil' tool.
+downloaders:
+  - protocols: ["gs"]
+    command: "bin/fetch.sh"
