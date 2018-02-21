@@ -1,13 +1,12 @@
 #!/bin/bash
 #
 #? Publish charts directory to Helm repository on Google Storage.
-##? Usage: helm gs publish --url <HELM_REPO_URL> [DIR]
+##? Usage: helm gs publish --url <HELM_REPO_URL> DIR
 ##? Arguments:
 ##?   HELM_REPO_URL - Google Storage URI (gs://...) of chart repository.
 ##?   DIR - charts directory
 #
-set -e
-set -o pipefail
+set -euo pipefail
 
 script_version=$(grep "^#?"  "$0" | cut -c 4-)
 script_help=$(grep "^##?" "$0" | cut -c 5-)
@@ -30,22 +29,27 @@ case $key in
 	shift # past argument
 	;;
 	*)
-	POSITIONAL+=("$1") # save it in an array for later
+	POSITIONAL[${#POSITIONAL[@]:-}]="$1"
 	shift # past argument
 	;;
 esac
 done
 
-set -- "${POSITIONAL[@]}"
+set -- "${POSITIONAL[@]:-}"
 
-HELM_REPO_DIR="${1:-$(pwd)}"
-
-if [ -z "$HELM_REPO_URL" ]; then
-	echo Repository URI required. Example: --url gs://my-repo-bucket >&2
-	echo
-	echo "$script_help"
+if [ -z "${HELM_REPO_URL:-}" ]; then
+	echo "Repository URI required. Example: --url gs://my-repo-bucket" . >&2
+	echo "Run with '--help' for more info" >&2
 	exit 1
 fi
+if [ -z "${1:-}" ]; then
+	echo "Missing argument: path to Helm package dir"
+	echo "Run with '--help' for more info" >&2
+	exit 1
+fi
+
+
+HELM_REPO_DIR="$1"
 
 # Publish charts
 echo
@@ -58,23 +62,23 @@ if [ -z "$current_index" ]; then
 	echo "Creating new repository"
 	helm repo index \
 		--url ${HELM_REPO_URL} \
-		${HELM_REPO_DIR}
+		"${HELM_REPO_DIR}"
 	gsutil -m \
-		cp ${HELM_REPO_DIR}/index.yaml ${HELM_REPO_URL}/index.yaml
+		cp "${HELM_REPO_DIR}/index.yaml" ${HELM_REPO_URL}/index.yaml
 else
 	current_index_version="${current_index##*#}"
 	echo "Updating repository"
-	gsutil cp $current_index ${HELM_REPO_DIR}/
+	gsutil cp $current_index "${HELM_REPO_DIR}/"
 	helm repo index \
 		--url ${HELM_REPO_URL} \
-		--merge ${HELM_REPO_DIR}/index.yaml \
-		${HELM_REPO_DIR}
+		--merge "${HELM_REPO_DIR}/index.yaml" \
+		"${HELM_REPO_DIR}"
 	gsutil -m -h x-goog-if-generation-match:$current_index_version \
 		cp ${HELM_REPO_DIR}/index.yaml ${HELM_REPO_URL}/index.yaml
 fi
 
-gsutil -m rsync -x "index\.yaml$" ${HELM_REPO_DIR}/ ${HELM_REPO_URL}/
+gsutil -m rsync -x "index\.yaml$" "${HELM_REPO_DIR}" ${HELM_REPO_URL}
 
 # Acknowledge
 echo
-ls -l ${HELM_REPO_DIR}
+ls -l "${HELM_REPO_DIR}"
