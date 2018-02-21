@@ -1,3 +1,13 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/ausov/helm-gs/compare/v0.2.0...v0.2.1) (2018-02-21)
+
+
+### Bug Fixes
+
+* **Publish:** require charts dir parameter ([f8ad567](https://github.com/ausov/helm-gs/commit/f8ad567))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/ausov/helm-gs/compare/v0.1.0...v0.2.0) (2017-10-28)
 

@@ -1,6 +1,6 @@
 {
   "name": "helm-gs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Google Storage protocol support for Helm",
   "author": "Youdowell AG <admin@youdowell.com>",
   "license": "MIT",
