@@ -28,7 +28,8 @@ trap 'fail "caught signal!' HUP KILL QUIT
 
 case "${1:-}" in
 	publish)
-		"$HELM_PLUGIN_DIR/bin/publish.sh" "${@:2}"
+		shift
+		"$HELM_PLUGIN_DIR/bin/publish.sh" "$@"
 		;;
 	--help|'')
 		help
