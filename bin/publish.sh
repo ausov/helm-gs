@@ -1,55 +1,61 @@
-#!/bin/bash
+#!/usr/bin/env sh
 #
 #? Publish charts directory to Helm repository on Google Storage.
-##? Usage: helm gs publish --url <HELM_REPO_URL> DIR
+##? Usage: helm gs publish --url <HELM_REPO_URL> <DIR>
 ##? Arguments:
 ##?   HELM_REPO_URL - Google Storage URI (gs://...) of chart repository.
-##?   DIR - charts directory
+##?   DIR - Charts directory
 #
-set -euo pipefail
+set -eo pipefail
 
 script_version=$(grep "^#?"  "$0" | cut -c 4-)
 script_help=$(grep "^##?" "$0" | cut -c 5-)
 
-POSITIONAL=()
+HELM_REPO_DIR=''
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
 	--url)
-	HELM_REPO_URL="$2"
-	shift # past argument
-	shift # past value
-	;;
+		HELM_REPO_URL="$2"
+		shift # past argument
+		shift # past value
+		;;
 	--help)
-	echo "$script_version"
-	echo
-	echo "$script_help"
-	echo
-	shift # past argument
-	;;
+		echo "$script_version"
+		echo
+		echo "$script_help"
+		echo
+		exit 0
+		;;
 	*)
-	POSITIONAL[${#POSITIONAL[@]:-}]="$1"
-	shift # past argument
-	;;
+		if [ -n "${HELM_REPO_DIR}" ]; then
+			echo "Invalid argument: '$1'" >&2
+			echo "Run with '--help' for more info" >&2
+			exit 1
+		fi
+		[ -z "${HELM_REPO_DIR}" ] && HELM_REPO_DIR="$1"
+		shift # past argument
+		;;
 esac
 done
-
-set -- "${POSITIONAL[@]:-}"
 
 if [ -z "${HELM_REPO_URL:-}" ]; then
 	echo "Repository URI required. Example: --url gs://my-repo-bucket" . >&2
 	echo "Run with '--help' for more info" >&2
 	exit 1
 fi
-if [ -z "${1:-}" ]; then
-	echo "Missing argument: path to Helm package dir"
+if [ -z "${HELM_REPO_DIR}" ]; then
+	echo "Charts directory required" >&2
 	echo "Run with '--help' for more info" >&2
 	exit 1
 fi
-
-
-HELM_REPO_DIR="$1"
+if ! [ -d "${HELM_REPO_DIR}" ]; then
+	echo "Charts directory '${HELM_REPO_DIR}' does not exists" >&2
+	echo "Run with '--help' for more info" >&2
+	exit 1
+fi
 
 # Publish charts
 echo
@@ -58,7 +64,7 @@ echo "Publishing charts"
 # Retrieve latest version info of the index.yaml
 current_index=$(gsutil ls -a ${HELM_REPO_URL}/index.yaml 2>/dev/null | tail -n 1 || true)
 
-if [ -z "$current_index" ]; then
+if [ -z "${current_index}" ]; then
 	echo "Creating new repository"
 	helm repo index \
 		--url ${HELM_REPO_URL} \
