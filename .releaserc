@@ -1,0 +1,28 @@
+#
+# Semantic release configuration.
+#
+# See: https://github.com/semantic-release/github
+#
+branch: master
+plugins:
+  - '@semantic-release/commit-analyzer'
+  - '@semantic-release/release-notes-generator'
+  - '@semantic-release/changelog'
+  - '@semantic-release/git'
+  - '@semantic-release/github'
+  - '@semantic-release/exec'
+verifyConditions:
+  - path: "@semantic-release/changelog"
+  - path: "@semantic-release/git"
+  - path: "@semantic-release/github"
+prepare:
+  - path: "@semantic-release/exec"
+    cmd: 'sed -i '' "s/^version:.*/version: ${nextRelease.version}/" plugin.yaml'
+  - path: "@semantic-release/changelog"
+  - path: "@semantic-release/git"
+    message: "${nextRelease.version}"
+    assets: ["CHANGELOG.md"]
+publish:
+  - path: "@semantic-release/github"
+success: []
+fail: []

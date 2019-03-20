@@ -1,6 +1,6 @@
 PROJECT				?= $(notdir $(patsubst %/,%,$(CURDIR)))
-PACKAGE_VERSION		:= $(shell node -e 'console.log(require("./package.json").version)')
-VERSION				?= $(PACKAGE_VERSION)
+VERSION				?= 0.0.0-SNAPSHOT
+YARN_CACHE_DIR      ?= .cache/yarn
 
 .PHONY: all info version install uninstall
 
@@ -10,10 +10,21 @@ info:
 	$(info PROJECT: $(PROJECT))
 	$(info VERSION: $(VERSION))
 
-.PHONY: release install uninstall
+.PHONY: version release install uninstall
 
 version:
 	sed -i '' "s/^version:.*/version: $(VERSION)/" plugin.yaml
+
+release:
+	yarn global add \
+		--non-interactive --ignore-engines --production --no-lockfile \
+		--cache-folder "$(YARN_CACHE_DIR)" \
+		@semantic-release/git@7 \
+		@semantic-release/gitlab@3 \
+		@semantic-release/changelog@3 \
+		@semantic-release/exec@3 \
+		semantic-release@15
+	semantic-release --no-ci
 
 install:
 	helm plugin install .
